@@ -285,7 +285,7 @@ class PhysicsBasedSeismicInversion:
                     optimal_params = {
                         'lambda_reg': 0.1,
                         'freq_low': 5.0,
-                        'freq_high': 80.0
+                        'freq_high': 200.0
                     }
                     results['parameters_used'] = optimal_params
                 
@@ -1531,8 +1531,8 @@ def main():
         
         # Frequency parameters for band-limited
         if inversion_method == 'band_limited':
-            freq_low = st.slider("Low-cut Frequency (Hz):", 1, 20, 5, 1)
-            freq_high = st.slider("High-cut Frequency (Hz):", 40, 120, 80, 5)
+            freq_low = st.slider("Low-cut Frequency (Hz):", 1, 50, 5, 1)
+            freq_high = st.slider("High-cut Frequency (Hz):", 40, 1500, 80, 10)
         
         # Physics-based parameters
         if inversion_method == 'band_limited_pro':
@@ -1550,8 +1550,8 @@ def main():
                     lambda_reg = st.slider("Regularization (λ):", 0.001, 1.0, 0.1, 0.001)
                     alpha_smooth = st.slider("Smoothing (α):", 0.001, 0.5, 0.01, 0.001)
                 with col2:
-                    freq_low = st.slider("Low Freq (Hz):", 1.0, 20.0, 5.0, 1.0)
-                    freq_high = st.slider("High Freq (Hz):", 30.0, 120.0, 80.0, 5.0)
+                    freq_low = st.slider("Low Freq (Hz):", 1.0, 50.0, 5.0, 1.0)
+                    freq_high = st.slider("High Freq (Hz):", 30.0, 1500.0, 80.0, 10.0)
             
             target_correlation = st.slider(
                 "Target Correlation:", 0.6, 0.95, 0.8, 0.05,

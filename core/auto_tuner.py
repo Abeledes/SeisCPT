@@ -25,11 +25,11 @@ class ParameterAutoTuner:
         
         # Parameter bounds
         self.parameter_bounds = {
-            'dominant_frequency': (5.0, 80.0),
+            'dominant_frequency': (5.0, 200.0),
             'lambda_reg': (0.001, 1.0),
             'alpha_smooth': (0.001, 0.5),
-            'freq_low': (2.0, 20.0),
-            'freq_high': (30.0, 120.0)
+            'freq_low': (1.0, 50.0),
+            'freq_high': (30.0, 1500.0)
         }
         
         # Optimization history

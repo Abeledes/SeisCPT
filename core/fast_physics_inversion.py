@@ -25,7 +25,7 @@ class FastPhysicsInversion:
                                    low_freq_model: np.ndarray,
                                    dt: float,
                                    lambda_reg: float = 0.1,
-                                   freq_band: Tuple[float, float] = (5.0, 80.0)) -> Tuple[np.ndarray, Dict]:
+                                   freq_band: Tuple[float, float] = (5.0, 200.0)) -> Tuple[np.ndarray, Dict]:
         """
         Fast physics-based inversion using optimized algorithms.
         
@@ -244,8 +244,8 @@ class FastWaveletEstimator:
             pos_freqs = freqs[:len(freqs)//2]
             pos_fft = fft_data[:len(fft_data)//2]
             
-            # Find peak in 10-60 Hz range
-            mask = (pos_freqs >= 10) & (pos_freqs <= 60)
+            # Find peak in 10-200 Hz range (extended for high-frequency analysis)
+            mask = (pos_freqs >= 10) & (pos_freqs <= 200)
             if np.any(mask):
                 peak_idx = np.argmax(pos_fft[mask])
                 dominant_freq = pos_freqs[mask][peak_idx]
@@ -400,15 +400,15 @@ class FastAutoTuner:
         if noise_ratio > 0.5:  # Noisy data
             lambda_reg = 0.2
             freq_low = 8.0
-            freq_high = 60.0
+            freq_high = 100.0  # Higher frequency even for noisy data
         elif noise_ratio > 0.3:  # Medium noise
             lambda_reg = 0.1
             freq_low = 5.0
-            freq_high = 80.0
+            freq_high = 150.0  # Higher frequency for medium noise
         else:  # Clean data
             lambda_reg = 0.05
             freq_low = 3.0
-            freq_high = 100.0
+            freq_high = 200.0  # Higher frequency for clean data
         
         # Frequency analysis (fast)
         avg_trace = np.mean(seismic_data[:min(500, seismic_data.shape[0]), :5], axis=1)
@@ -422,8 +422,8 @@ class FastAutoTuner:
         if len(pos_fft) > 0:
             dom_freq = pos_freqs[np.argmax(pos_fft)]
             if abs(dom_freq) > 0:
-                freq_low = max(freq_low, abs(dom_freq) * 0.3)
-                freq_high = min(freq_high, abs(dom_freq) * 3.0)
+                freq_low = max(freq_low, abs(dom_freq) * 0.2)
+                freq_high = min(freq_high, abs(dom_freq) * 5.0)  # Allow higher frequencies
         
         return {
             'lambda_reg': lambda_reg,

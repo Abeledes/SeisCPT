@@ -27,7 +27,7 @@ class PhysicsBasedInversion:
                                   dt: float,
                                   lambda_reg: float = 0.1,
                                   alpha_smooth: float = 0.01,
-                                  freq_band: Tuple[float, float] = (5.0, 80.0)) -> Tuple[np.ndarray, Dict]:
+                                  freq_band: Tuple[float, float] = (5.0, 200.0)) -> Tuple[np.ndarray, Dict]:
         """
         Professional band-limited inversion using physics-based approach.
         

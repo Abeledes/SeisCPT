@@ -16,8 +16,8 @@ class WaveletEstimator:
         
     def estimate_wavelet(self, seismic_data: np.ndarray, dt: float,
                         method: str = 'autocorr',
-                        length_ms: float = 200.0,
-                        freq_range: Tuple[float, float] = (5.0, 80.0)) -> Tuple[np.ndarray, Dict]:
+                        length_ms: float = 10.0,
+                        freq_range: Tuple[float, float] = (5.0, 1500.0)) -> Tuple[np.ndarray, Dict]:
         """
         Estimate source wavelet from seismic data.
         
