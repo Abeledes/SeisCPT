@@ -1,0 +1,35 @@
+[server]
+# Increase file upload size to 10GB
+maxUploadSize = 10240
+
+# Increase message size for large data transfers
+maxMessageSize = 1024
+
+# Enable file watcher for development
+fileWatcherType = "auto"
+
+# Server settings for large files
+enableCORS = false
+enableXsrfProtection = true
+
+[browser]
+# Automatically open browser
+gatherUsageStats = false
+
+[theme]
+# Professional dark theme
+primaryColor = "#4fc3f7"
+backgroundColor = "#0a0e27"
+secondaryBackgroundColor = "#1a1f3a"
+textColor = "#e8eaed"
+
+[runner]
+# Increase memory limits for large seismic data
+magicEnabled = true
+installTracer = false
+fixMatplotlib = true
+
+[client]
+# Show error details
+showErrorDetails = true
+toolbarMode = "auto"
