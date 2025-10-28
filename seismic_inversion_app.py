@@ -1366,7 +1366,8 @@ def create_seismic_colormap():
 
 def plot_seismic_section(data: np.ndarray, time: np.ndarray, title: str = "Seismic Section",
                         trace_range: Tuple[int, int] = None, time_range: Tuple[float, float] = None,
-                        colormap: str = 'seismic', clip_percentile: float = 99.0) -> plt.Figure:
+                        colormap: str = 'seismic', clip_percentile: float = 99.0, 
+                        data_type: str = 'seismic') -> plt.Figure:
     """Plot seismic section with professional styling"""
     
     if trace_range is None:
@@ -1388,17 +1389,37 @@ def plot_seismic_section(data: np.ndarray, time: np.ndarray, title: str = "Seism
     fig.patch.set_facecolor('#0a0e27')
     ax.set_facecolor('#1a1f3a')
     
-    # Calculate clip values
-    clip_val = np.percentile(np.abs(plot_data), clip_percentile)
+    # Calculate appropriate scaling based on data type
+    if data_type == 'impedance':
+        # For impedance: use realistic range, not centered around zero
+        data_min = np.percentile(plot_data, 2)  # 2nd percentile
+        data_max = np.percentile(plot_data, 98)  # 98th percentile
+        
+        # Ensure realistic impedance range
+        vmin = max(1500, data_min)  # Minimum realistic impedance
+        vmax = min(12000, data_max)  # Maximum realistic impedance
+        
+        # Use viridis or plasma for impedance (better for positive values)
+        if colormap == 'seismic':
+            colormap = 'viridis'  # Better for impedance
+        
+        colorbar_label = 'Acoustic Impedance (m/s·g/cm³)'
+        
+    else:
+        # For seismic: use symmetric clipping around zero
+        clip_val = np.percentile(np.abs(plot_data), clip_percentile)
+        vmin = -clip_val
+        vmax = clip_val
+        colorbar_label = 'Amplitude'
     
-    # Plot seismic data
+    # Plot data
     if colormap == 'seismic_pro':
         cmap = create_seismic_colormap()
     else:
         cmap = plt.cm.get_cmap(colormap)
     
     im = ax.imshow(plot_data, aspect='auto', cmap=cmap, 
-                   vmin=-clip_val, vmax=clip_val,
+                   vmin=vmin, vmax=vmax,
                    extent=[trace_start, trace_end, plot_time[-1], plot_time[0]])
     
     # Styling
@@ -1409,7 +1430,7 @@ def plot_seismic_section(data: np.ndarray, time: np.ndarray, title: str = "Seism
     
     # Colorbar
     cbar = plt.colorbar(im, ax=ax, shrink=0.8)
-    cbar.set_label('Amplitude', color='white', fontsize=10)
+    cbar.set_label(colorbar_label, color='white', fontsize=10)
     cbar.ax.tick_params(colors='white')
     
     plt.tight_layout()
@@ -1857,7 +1878,8 @@ def main():
                         data_info['time'],
                         "Acoustic Impedance (m/s·g/cm³)",
                         colormap='viridis',
-                        clip_percentile=clip_percentile
+                        clip_percentile=clip_percentile,
+                        data_type='impedance'
                     )
                     st.pyplot(fig_impedance)
                 

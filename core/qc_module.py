@@ -406,7 +406,7 @@ class QualityControl:
         return self._fig_to_base64(fig)
     
     def _plot_impedance_section(self, impedance: np.ndarray, dt: float) -> str:
-        """Plot impedance section."""
+        """Plot impedance section with realistic scaling."""
         
         fig, ax = plt.subplots(figsize=(12, 8))
         fig.patch.set_facecolor('#0a0e27')
@@ -415,7 +415,13 @@ class QualityControl:
         time_axis = np.arange(impedance.shape[0]) * dt
         trace_range = min(100, impedance.shape[1])
         
-        im = ax.imshow(impedance[:, :trace_range], aspect='auto', cmap='viridis',
+        # Use realistic impedance scaling
+        plot_data = impedance[:, :trace_range]
+        vmin = max(1500, np.percentile(plot_data, 2))  # Realistic minimum
+        vmax = min(12000, np.percentile(plot_data, 98))  # Realistic maximum
+        
+        im = ax.imshow(plot_data, aspect='auto', cmap='viridis',
+                      vmin=vmin, vmax=vmax,
                       extent=[0, trace_range, time_axis[-1], time_axis[0]])
         
         ax.set_title('Acoustic Impedance Section', color='white', fontsize=14)
@@ -423,7 +429,7 @@ class QualityControl:
         ax.set_ylabel('Time (s)', color='white')
         ax.tick_params(colors='white')
         
-        # Colorbar
+        # Colorbar with realistic range
         cbar = plt.colorbar(im, ax=ax)
         cbar.set_label('Acoustic Impedance (m/s·g/cm³)', color='white')
         cbar.ax.tick_params(colors='white')
@@ -522,16 +528,28 @@ class QualityControl:
         # SNR gauge
         self._plot_gauge(ax3, min(basic_metrics['snr_db'], 30), 'SNR (dB)', 0, 30)
         
-        # Impedance histogram
+        # Impedance histogram with realistic scaling
         ax4.set_facecolor('#1a1f3a')
         ai_stats = basic_metrics['impedance_stats']
+        
+        # Ensure realistic impedance range display
+        values = [ai_stats['min'], ai_stats['p10'], ai_stats['mean'], 
+                 ai_stats['median'], ai_stats['p90'], ai_stats['max']]
+        
         ax4.bar(['Min', 'P10', 'Mean', 'Median', 'P90', 'Max'],
-               [ai_stats['min'], ai_stats['p10'], ai_stats['mean'], 
-                ai_stats['median'], ai_stats['p90'], ai_stats['max']],
-               color='#4fc3f7', alpha=0.7)
+               values, color='#4fc3f7', alpha=0.7)
+        
+        # Set realistic y-axis limits
+        y_min = max(1000, min(values) - 500)
+        y_max = min(15000, max(values) + 500)
+        ax4.set_ylim(y_min, y_max)
+        
         ax4.set_title('Impedance Statistics', color='white')
         ax4.set_ylabel('Impedance (m/s·g/cm³)', color='white')
         ax4.tick_params(colors='white')
+        
+        # Add grid for better readability
+        ax4.grid(True, alpha=0.3, color='white')
         
         plt.tight_layout()
         return self._fig_to_base64(fig)
