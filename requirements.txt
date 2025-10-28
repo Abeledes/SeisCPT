@@ -1,10 +1,13 @@
 # SeisCPT - Professional Seismic Inversion Application
-# Core dependencies for full functionality
+# Core dependencies for physics-based inversion
 
 streamlit>=1.28.0
 numpy>=1.21.0
 matplotlib>=3.5.0
 scipy>=1.7.0
+
+# Physics-based inversion core
+scikit-learn>=1.0.0
 
 # System monitoring for large files
 psutil>=5.8.0
@@ -24,3 +27,7 @@ numba>=0.56.0
 # Development and testing
 # pytest>=6.0.0
 # memory-profiler>=0.60.0
+
+# Physics-based algorithms
+# pylops>=1.18.0  # For advanced linear operators (optional)
+# cvxpy>=1.2.0    # For convex optimization (optional)
